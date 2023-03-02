@@ -1,5 +1,5 @@
 class Noel extends Flare {
-    maxHealth = 16;
+    maxHealth = NUIPARAMS.maxhealth || 16;
 
     lastPoses = [];
     slidePower = 5;
@@ -32,14 +32,14 @@ class Noel extends Flare {
 
         // if (this.isSleeping && Object.values(keys).some(key => key)) this.isSleeping = false;
         const wasGrounded = this.isGrounded;
-        this.isGrounded = sceneCollistions.find(collision => 
+        this.isGrounded = sceneCollistions.find(collision =>
             CollisionBox.collidesWithInAxis({pos:{x:this.pos.x,y:this.pos.y+this.size.y},size:{x:this.size.x,y:0}}, collision, 'y') &&
             CollisionBox.intersectsInAxis(this, collision, 'x'));
-        
-        let ceilObstacle = sceneCollistions.find(collision => 
+
+        let ceilObstacle = sceneCollistions.find(collision =>
             CollisionBox.collidesWithInAxis({pos:{x:this.pos.x,y:this.pos.y},size:{x:this.size.x,y:0}}, collision, 'y') &&
             CollisionBox.intersectsInAxis(this, collision, 'x'));
-        
+
         if (!this.jetski && !this.isSliding && !this.slideBuffer && this.isGrounded && keys.jump && keys.down) {
             this.vel.x = this.slidePower * (this.dir ? 1 : -1);
             this.isSliding = true;
@@ -68,11 +68,11 @@ class Noel extends Flare {
                 }
             }
         }
-        
-        this.isGrounded = sceneCollistions.find(collision => 
+
+        this.isGrounded = sceneCollistions.find(collision =>
             CollisionBox.collidesWithInAxis({pos:{x:this.pos.x,y:this.pos.y+this.size.y},size:{x:this.size.x,y:0}}, collision, 'y') &&
             CollisionBox.intersectsInAxis(this, collision, 'x'));
-        ceilObstacle = sceneCollistions.find(collision => 
+        ceilObstacle = sceneCollistions.find(collision =>
             CollisionBox.collidesWithInAxis({pos:{x:this.pos.x,y:this.pos.y},size:{x:this.size.x,y:0}}, collision, 'y') &&
             CollisionBox.intersectsInAxis(this, collision, 'x'));
 
@@ -242,7 +242,7 @@ class Noel extends Flare {
                 mace.damage = keyChargeAttack ? 4 : 2;
                 mace.isPersistent = true;
                 game.scene.actors.push(mace);
-    
+
                 game.playSound('bow_shoot');
                 game.scene.particles.mace(CollisionBox.center(this).plus(new Vector2(16 * (this.dir ? 1 : -1), 0)), this.dir, this.noelAttack !== 0);
                 this.attackCooldown = keyChargeAttack ? 12 : 24;
@@ -300,7 +300,7 @@ class Noel extends Flare {
 
     takeHit = (game, other) => {
         if (this.isSliding || (other instanceof Robot && other.sleep) || (other instanceof EvilNoel && other.isTrueEnd)) return;
-        
+
         if (!this.invicibility) {
             if (other.originActor instanceof Cannon && game.currentStage === 4) game.playSound('question');
             else game.playSound('damage');

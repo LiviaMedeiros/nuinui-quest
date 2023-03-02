@@ -1,8 +1,8 @@
 class Game {
     frameCount = 0;
 
-    width = 16 * 20;
-    height = 16 * 12;
+    width = 16 * 20 * (NUIPARAMS.wm ?? 1);
+    height = 16 * 12 * (NUIPARAMS.hm ?? 1);
 
     audioCtx = null;
     bufferLoader = null;
@@ -18,7 +18,7 @@ class Game {
     score = 0;
     scoreDisplay = 0;
 
-    // noelMode = true;
+    noelMode = !!(NUIPARAMS.noelmode ?? false);
 
     isPaused = false;
     manualPause = false;
@@ -32,7 +32,7 @@ class Game {
         // Assets
         this.assets = assets;
 
-        // JSON data
+        // parsed game file data
         this.data = data;
 
         // Controller
@@ -65,7 +65,7 @@ class Game {
         }
 
         if (!SAVEOK) {
-            document.getElementById('game-container').innerHTML = 'The saving system is incompatible with your navigator, please enable cookies/localstorage';
+            document.getElementById('game-container').textContent = 'The saving system is incompatible with your navigator, please enable cookies/localstorage';
         }
 
         document.getElementById('pause-icon').onclick = () => this.togglePause();
@@ -83,7 +83,7 @@ class Game {
         // if (urlParams.has('stage')) this.currentStage = parseInt(urlParams.get('stage')) - 1;
 
         // Init stage selection
-        this.scene = new Scene(this, JSON.parse(this.data).game.stages[this.currentStage]);
+        this.scene = new Scene(this, this.data.game.stages[this.currentStage]);
 
         if (!localStorage.getItem('nuinui-save-item-fire')) localStorage.setItem('nuinui-save-item-fire', true);
         this.updateItems();
@@ -160,6 +160,9 @@ class Game {
                         } else {
                             flare.maxHealth = 16;
                         }
+                        if (NUIPARAMS.maxhealth) {
+                          flare.health = flare.maxHealth = NUIPARAMS.maxhealth;
+                        }
                         this.playSound('wakeup');
                     }
                 }
@@ -232,7 +235,7 @@ class Game {
         }
         document.getElementById("bgm-volume-icon").onclick = e => {
             BGMMUTED = !BGMMUTED;
-            document.getElementById("bgm-volume-icon").innerHTML = BGMMUTED ? '<img src="./img/icon_volume_off.png">' : '<img src="./img/icon_volume_on.png">';
+            document.getElementById("bgm-volume-icon").firstElementChild.src = `./img/${BGMMUTED ? 'icon_volume_off' : 'icon_volume_on'}.png`;
             this.bgm.updateVolume();
         }
 
@@ -253,7 +256,7 @@ class Game {
             }
             document.getElementById("bgm-volume-icon").onclick = e => {
                 BGMMUTED = !BGMMUTED;
-                document.getElementById("bgm-volume-icon").innerHTML = BGMMUTED ? '<img src="./img/icon_volume_off.png">' : '<img src="./img/icon_volume_on.png">';
+                document.getElementById("bgm-volume-icon").firstElementChild.src = `./img/${BGMMUTED ? 'icon_volume_off' : 'icon_volume_on'}.png`;
             }
         }
     }

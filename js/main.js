@@ -1,4 +1,7 @@
-let DEBUGMODE = false;
+const NUIPARAMS = Object.fromEntries(new URLSearchParams(window.location.search).entries());
+let DEBUGMODE = !!(NUIPARAMS.debugmode ?? false);
+const TILENUMBERS = !!(NUIPARAMS.tilenumbers ?? false);
+window.NUIGURUMI = {};
 
 let SEMUTED = false;
 let SEVOLUME = 0.5;
@@ -13,7 +16,7 @@ const toggleInfo = () => {
     const container = document.getElementById("info-container");
     const toggle = container.style.display === 'none';
     container.style.display = toggle ? 'flex' : 'none';
-    document.getElementById('info-icon').innerHTML = toggle ? '<img src="./img/icon_close.png">' : '<img src="./img/icon_info.png">';
+    document.getElementById('info-icon').firstElementChild.src = `./img/${toggle ? 'icon_close' : 'icon_info'}.png`;
     INFOENABLED = !INFOENABLED;
 }
 
@@ -27,7 +30,7 @@ const toggleSave = () => {
     const container = document.getElementById("save-container");
     const toggle = container.style.display === 'none';
     container.style.display = toggle ? 'flex' : 'none';
-    document.getElementById('save-icon').innerHTML = toggle ? '<img src="./img/icon_close.png">' : '<img src="./img/icon_save.png">';
+    document.getElementById('save-icon').firstElementChild.src = `./img/${toggle ? 'icon_close' : 'icon_save'}.png`;
     SAVEENABLED = !SAVEENABLED;
 }
 
@@ -114,22 +117,28 @@ const debugSave = () => {
     localStorage.setItem('nuinui-save-achievement-19', true);
     localStorage.setItem('nuinui-save-achievement-20', true);
 }
-// debugSave();
 
-window.onload = () => {
+if (NUIPARAMS.debugsave) {
+    debugSave();
+}
+
+window.addEventListener('load', () => {
     INPUTMANAGER = new InputManager();
     // Game
     fetch("save.json").then(res => res.json()).then(res => {
         console.log("game file loaded", res);
-        const game = new Game(new Assets(), JSON.stringify(res));
-        game.assets.load().then(game.start());
+        const game = new Game(new Assets(), Object.freeze(res));
+        window.NUIGURUMI.gamefile = res;
+        window.NUIGURUMI.game = game;
+        game.assets.load();
+        game.start();
     });
 
     // Sound options
     document.getElementById("se-volume").onchange = e => SEVOLUME = e.target.value;
     document.getElementById("se-volume-icon").onclick = e => {
         SEMUTED = !SEMUTED;
-        document.getElementById("se-volume-icon").innerHTML = SEMUTED ? '<img src="./img/icon_volume_off.png">' : '<img src="./img/icon_volume_on.png">';
+        document.getElementById("se-volume-icon").firstElementChild.src = `./img/${SEMUTED ? 'icon_volume_off' : 'icon_volume_on'}.png`;
     }
 
     window.onblur = () => {
@@ -148,7 +157,7 @@ window.onload = () => {
     }
     document.getElementById("bgm-volume-icon").onclick = e => {
         BGMMUTED = !BGMMUTED;
-        document.getElementById("bgm-volume-icon").innerHTML = BGMMUTED ? '<img src="./img/icon_volume_off.png">' : '<img src="./img/icon_volume_on.png">';
+        document.getElementById("bgm-volume-icon").firstElementChild.src = `./img/${BGMMUTED ? 'icon_volume_off' : 'icon_volume_on'}.png`;
     }
 
     if (typeof __TAURI__ !== 'undefined') {
@@ -167,4 +176,4 @@ window.onload = () => {
             document.body.style.cursor = "none";
         }, 1000);
     }
-}
+}, { once: true });

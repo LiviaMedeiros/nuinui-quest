@@ -54,7 +54,7 @@ class Flare extends Actor {
         }
     }
 
-    maxHealth = 16;
+    maxHealth = NUIPARAMS.maxhealth || 16;
 
     // Flare animations
     animations = {

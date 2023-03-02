@@ -189,6 +189,10 @@ class Scene {
     }
 
     drawTiles = (game, ctx, tiles) => {
+        if (TILENUMBERS) {
+            ctx.font = "8px sans";
+            ctx.fillStyle = "red";
+        }
         const pos = this.view.pos.times(1 / 16).floor();
         for (let y = pos.y - (!this.towerScroll ? 0 : 1); y < pos.y + 1 + this.view.size.y / 16; y++) {
             for (let x = pos.x; x < pos.x + 1 + this.view.size.x / 16; x++) {
@@ -198,6 +202,10 @@ class Scene {
                     if (tile > 63) tile += 8 * (Math.floor(this.frameCount / (tile === 69 ? 12 : tile > 69 && this.name === 'forest' ? 24 : 6)) % 3);
                     const towerScrollOffset = (!this.towerScroll || (tiles !== this.background && x > 22 && x < 37)) ? 0 : Math.floor(this.frameCount / this.towerScroll) % 16;
                     ctx.drawImage(game.assets.images[`ts_${this.name}`], (tile % 8) * 16, Math.floor(tile / 8) * 16, 16, 16, x * 16, y * 16 + towerScrollOffset, 16, 16);
+                    if (TILENUMBERS) {
+                        ctx.fillText(x.toString(16), x * 16, y * 16);
+                        ctx.fillText(y.toString(16), x * 16, y * 16 + 8);
+                    }
                 }
             }
         }
@@ -233,21 +241,28 @@ class Scene {
 
         cx.drawImage(game.assets.images['ui_score'], game.width - 57, 2);
         game.scoreDisplay = game.scoreDisplay ? (1 - .1) * game.scoreDisplay + .1 * game.score : game.score;
-        const digits = Array.from(String(Math.ceil(game.scoreDisplay)), num => Number(num));
-        while (digits.length < 8) digits.unshift(0);
+        const digits = ('00000000' + (game.scoreDisplay | 0)).slice(-8).split('');
         digits.forEach((digit, i) => {
             cx.drawImage(game.assets.images['ui_digit'], 5 * digit, 0, 5, 5, game.width - 53 + 6 * i, 5, 5, 5);
         });
 
         if (game.timer) {
-            cx.drawImage(game.assets.images['ui_timer'], game.width - 39, 15);
-
             const time = (new Date().getTime() - game.timer.getTime()) / 1000;
-            let minutes = parseInt(time / 60, 10);
-            let seconds = parseInt(time % 60, 10);
-            minutes = (minutes < 10 ? "0" + minutes : minutes).toString();
-            seconds = (seconds < 10 ? "0" + seconds : seconds).toString();
+            let minutes = ((time / 60) % 60) | 0;
+            let seconds = (time % 60) | 0;
+            minutes = ('00' + minutes).slice(-2);
+            seconds = ('00' + seconds).slice(-2);
 
+            if (time < 3600) {
+                cx.drawImage(game.assets.images['ui_timer'], game.width - 39, 15);
+            } else {
+                cx.drawImage(game.assets.images['ui_timer_wide'], game.width - 57, 15);
+                let hours = (time / 3600) | 0;
+                hours = ('00' + hours).slice(-2);
+                hours.split('').forEach((digit, i) => {
+                    cx.drawImage(game.assets.images['ui_digit'], 5 * parseInt(digit), 0, 5, 5, game.width - 53 + 6 * i, 18, 5, 5);
+                });
+            }
             minutes.split('').forEach((digit, i) => {
                 cx.drawImage(game.assets.images['ui_digit'], 5 * parseInt(digit), 0, 5, 5, game.width - 35 + 6 * i, 18, 5, 5);
             });
@@ -413,12 +428,12 @@ class Scene {
                     if (DEBUGMODE) this.currentSection.collisions.forEach(a => {
                         cx.save();
                         cx.translate(Math.round(a.pos.x), Math.round(a.pos.y));
-                        cx.fillStyle = "#00f8";
+                        cx.fillStyle = "#00f6";
                         cx.fillRect(0, 0, a.size.x, 1);
                         cx.fillRect(0, 0, 1, a.size.y);
                         cx.fillRect(a.size.x - 1, 0, 1, a.size.y);
                         cx.fillRect(0, a.size.y - 1, a.size.x, 1);
-                        cx.fillStyle = "#00f4";
+                        cx.fillStyle = "#00f3";
                         cx.fillRect(0, 0, a.size.x, a.size.y);
                         cx.restore();
                     });

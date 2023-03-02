@@ -9,12 +9,12 @@ class Comet extends Actor {
 
     update = game => {
         const flare = game.scene.actors.find(actor => actor instanceof Flare);
-        
+
         game.scene.particles.smoke_white(CollisionBox.center(this), new Vector2(0, 0), 0);
         if (!(this.frameCount % 4)) game.scene.particles.sparkle_fire_2(CollisionBox.center(this), null, 1);
 
         this.pos = this.pos.plus(this.vel);
-        
+
         let collision = false;
         const actorCollisions = game.scene.actors.filter(actor => !(actor instanceof Comet) && !(actor instanceof Suisei) && actor.checkHit(game, this));
         if (actorCollisions.length) {
@@ -44,7 +44,7 @@ class Comet extends Actor {
 
         this.frameCount++;
     }
-    
+
     checkHit = (game, collisionBox) => {
         const collision = CollisionBox.intersects(this, collisionBox);
         return collision;
@@ -94,7 +94,7 @@ class Axe extends Actor {
         }
         if (this.isGravity && !this.isGrounded && !this.gravityBuffer) this.vel.y += this.gravity;
         this.pos = this.pos.plus(this.vel);
-        
+
         if (!this.isGrounded && this.pos.y >= (4 * 12 + 10) * 16 - this.size.y) {
             game.scene.particles.run(this, true);
             game.scene.particles.run(this, false);
@@ -137,7 +137,7 @@ class Axe extends Actor {
         }
         this.frameCount++;
     }
-    
+
     checkHit = (game, collisionBox) => {
         const collision = CollisionBox.intersects(this, collisionBox);
         return collision;
@@ -160,7 +160,7 @@ class Axe extends Actor {
         }
         cx.drawImage(game.assets.images['sp_axe'], 0, 0, 64, 64, -32, -32, 64, 64);
         cx.restore();
-        
+
         if (!this.isRotation && this.suisei.phase !== 'intro') {
             const p1 = this.pos.plus(new Vector2(this.size.x / 2, this.size.y / (this.size.y === 64 ? 2 : 4)));
             const p2 = CollisionBox.center(this.suisei);
@@ -194,7 +194,7 @@ class Pendulum extends Actor {
 
     update = game => {
         const flare = game.scene.actors.find(actor => actor instanceof Flare);
-        
+
         const xDist = Math.abs(CollisionBox.center(flare).x - CollisionBox.center(this).x);
 
         if (this.isReady && xDist < 48 && this.pos.y < flare.pos.y && this.fallFrame === null) this.shakeBuffer = 2;
@@ -223,7 +223,7 @@ class Pendulum extends Actor {
         if (this.gravityBuffer) this.gravityBuffer--;
         this.frameCount++;
     }
-    
+
     checkHit = (game, collisionBox) => {
         const collision = CollisionBox.intersects(this, collisionBox);
         return collision;
@@ -262,7 +262,7 @@ class Block extends Actor {
 
     update = game => {
         const flare = game.scene.actors.find(actor => actor instanceof Flare);
-        
+
         let collision = false;
         const actorCollisions = game.scene.actors.filter(actor => actor instanceof Flare && actor.checkHit(game, this));
         if (actorCollisions.length) {
@@ -270,7 +270,7 @@ class Block extends Actor {
                 collision.takeHit(game, this);
             });
         }
-        
+
         if (!CollisionBox.intersects(this, game.scene.currentSection)) collision = true;
 
         if (collision) {
@@ -282,18 +282,18 @@ class Block extends Actor {
 
         this.frameCount++;
     }
-    
+
     checkHit = (game, collisionBox) => {
         const collision = CollisionBox.intersects(this, collisionBox);
         return collision;
     }
-    
+
     takeHit = (game, other) => {
         if (this.frameCount < this.index * 10) return;
         this.shakeBuffer = 15;
         game.scene.particles.ray(this.checkHit(game, other).pos);
         game.scene.particles.impact(this.checkHit(game, other).pos);
-        
+
         game.playSound('damage');
         game.score += 20;
         game.scene.actors = game.scene.actors.filter(a => a !== this);

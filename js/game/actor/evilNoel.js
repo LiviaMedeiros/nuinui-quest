@@ -4,7 +4,7 @@ class EvilNoel extends Actor {
     dir = true;
 
     phaseBuffer = 0;
-    
+
     posTarget = null;
     posTargets = [
         new Vector2(325 * 16, 28 * 16),
@@ -20,7 +20,7 @@ class EvilNoel extends Actor {
         super(pos);
         this.posTarget = this.posTargets[1];
     }
-    
+
     checkHit = (game, collisionBox) => CollisionBox.intersects(this, collisionBox);
 
     takeHit = (game, other) => {
@@ -29,10 +29,10 @@ class EvilNoel extends Actor {
             game.scene.particles.ray(this.checkHit(game, other).pos);
             game.scene.particles.impact(this.checkHit(game, other).pos);
             game.playSound('damage');
-            
+
             game.score += 100;
             this.invicibility = 30;
-            
+
             if (other.type === 'dual' && this.phase !== 'defeated') {
                 this.phase = 'defeated';
                 game.stopBGM();
@@ -45,7 +45,7 @@ class EvilNoel extends Actor {
             }
         }
     }
-    
+
     defeatedPhase = game => {
         //velloss
         this.vel = this.vel.mult(new Vector2(0.9, 1));
@@ -57,7 +57,7 @@ class EvilNoel extends Actor {
             this.pos.y = 32 * 16;
         }
     }
-    
+
     weakPhase = game => {
     }
 
@@ -89,7 +89,7 @@ class EvilNoel extends Actor {
             this.phase = 'idle';
         }
     }
-    
+
     idlePhase = game => {
         const flare = game.scene.actors.find(actor => actor instanceof Flare);
         if (this.phaseBuffer >= 31) {
@@ -108,7 +108,7 @@ class EvilNoel extends Actor {
             }
         }
     }
-    
+
     setAnimation = animation => {
         this.animation = animation;
         this.animationFrame = 0;
@@ -116,7 +116,7 @@ class EvilNoel extends Actor {
 
     update = game => {
         const flare = game.scene.actors.find(actor => actor instanceof Flare);
-        
+
         if (this.phase) this[`${this.phase}Phase`](game);
 
         if (this.phase === 'defeated') {
@@ -130,7 +130,7 @@ class EvilNoel extends Actor {
         this.pos.x = Math.round((this.pos.x) * 100) / 100;
 
         this.dir = CollisionBox.center(this).x < CollisionBox.center(flare).x;
-        
+
         if (this.lastPhase !== this.phase) this.phaseBuffer = 0;
         else this.phaseBuffer++;
         this.lastPhase = this.phase;
@@ -147,7 +147,7 @@ class EvilNoel extends Actor {
     }
 
     draw = (game, cx) => {
-        
+
         if (!this.isTrueEnd) {
             cx.save();
             cx.translate(Math.round(this.pos.x + this.size.x / 2 + Math.sin(this.frameCount / 100) * 32), Math.round(this.pos.y));

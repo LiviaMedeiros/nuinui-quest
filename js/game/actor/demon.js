@@ -12,10 +12,10 @@ class Demon extends Actor {
         super(pos);
         this.maxHealth = maxHealth;
         this.health = this.maxHealth;
-        
+
         this.targetPos = pos;
     }
-    
+
     checkHit = (game, collisionBox) => {
         const collision = CollisionBox.intersects(this, collisionBox);
         return !['intro', 'defeated'].includes(this.phase) ? collision : null;
@@ -29,7 +29,7 @@ class Demon extends Actor {
             game.scene.particles.ray(this.checkHit(game, other).pos);
             game.scene.particles.impact(this.checkHit(game, other).pos);
             game.playSound('hit');
-            
+
             if (!this.health) {
                 game.score += 5000;
             } else {
@@ -92,7 +92,7 @@ class Demon extends Actor {
             }
         }
     }
-    
+
     chargePhase = game => {
         this.shakeBuffer = 2;
         if (!(this.phaseBuffer % 4)) game.scene.particles.charge(this.pos.plus(new Vector2(this.size.x * .5, 64)));
@@ -161,7 +161,7 @@ class Demon extends Actor {
             this.phase = 'idle';
         }
     }
-    
+
     prepareHandPhase = game => {
         if (!this.phaseBuffer) {
             this.hands.forEach(hand => {
@@ -176,7 +176,7 @@ class Demon extends Actor {
                 this.hands.forEach(hand => hand.targetPos = CollisionBox.center(this.targetUnit).plus(new Vector2(-12 + 8 * (hand.dir ? 1 : -1), -24)));
             }
         }
-        
+
         if (!this.health) {
             this.unit = null;
             this.targetUnit = null;
@@ -267,11 +267,11 @@ class Demon extends Actor {
                 if (Math.abs(this.health - this.healthBar) < amt) this.healthBar = this.health;
             }
         }
-        
+
         for (let i = 0; i < 8; i++) {
             game.scene.particles.smoke_pink(CollisionBox.center(this).plus(new Vector2(Math.random() * 48 - 24, Math.random() * 64 - 32)), new Vector2(Math.random() - .5, Math.random() * -2), 0);
         }
-        
+
         if (this.screamBuffer && this.health) {
             if (!(this.frameCount % 20)) game.playSound('explosion');
             this.screamBuffer--;
@@ -293,11 +293,11 @@ class Demon extends Actor {
 
             cx.drawImage(game.assets.images['sp_demon_ribcage'], i * 40, 0, 40, 40,
                 -(this.phase === 'laser' ? 64 : 56) + 4 * i, this.size.y + i * 20 + 2 * Math.cos(2 * ((this.frameCount + i * 120) % 360) * (Math.PI / 180)), 40, 40);
-            
+
             cx.scale(-1, 1);
             cx.drawImage(game.assets.images['sp_demon_ribcage'], i * 40, 0, 40, 40,
                 -(this.phase === 'laser' ? 64 : 56) + 4 * i, this.size.y + i * 20 + 2 * Math.cos(2 * ((this.frameCount + i * 120) % 360) * (Math.PI / 180)), 40, 40);
-            
+
             cx.restore();
         }
 
@@ -337,7 +337,7 @@ class DemonHand extends Actor {
         const collision = CollisionBox.intersects(this, collisionBox);
         return collision;
     }
-    
+
     takeHit = (game, other) => {
         this.shakeBuffer = 15;
         game.scene.particles.ray(this.checkHit(game, other).pos);
@@ -352,7 +352,7 @@ class DemonHand extends Actor {
 
             this.pos = this.pos.lerp(this.targetPos, this.amount);
         }
-        
+
         if (this.demon.phase === 'end') this.shakeBuffer = 2;
 
         for (let i = 0; i < 2; i++) {
@@ -399,7 +399,7 @@ class ShirakenHelper extends Actor {
         game.scene.particles.ray(this.checkHit(game, other).pos);
         game.scene.particles.impact(this.checkHit(game, other).pos);
         game.playSound('hit');
-        
+
         this.weakBuffer = 3 * 60;
         this.chargeCooldown = 60;
         this.chargeBuffer = 0;
@@ -417,7 +417,7 @@ class ShirakenHelper extends Actor {
                 demon.unit = null;
             }
         }
-        
+
         if (this.demonHand || this.weakBuffer) {
             if (Math.random() > .95) this.shakeBuffer = 2;
             for (let i = 0; i < 2; i++) {
@@ -448,7 +448,7 @@ class ShirakenHelper extends Actor {
         if (action === 'charge') cx.drawImage(game.assets.images[`sp_noel_attack`], 64, 0, 64, 40, -40, -5, 64, 40);
         else cx.drawImage(game.assets.images[`sp_noel_${action}`], 0, 0, 32, 40, -8, -6, 32, 40);
     }
-    
+
     draw = (game, cx) => {
         cx.save();
         cx.translate(Math.round(this.pos.x), Math.round(this.pos.y));

@@ -10,7 +10,7 @@ class Card extends Actor {
         this.polka = polka;
         this.id = id;
     }
-    
+
     checkHit = (game, collisionBox) => {
         const collision = CollisionBox.intersects(this, collisionBox);
         return this.isDisabled ? null : collision;
@@ -21,7 +21,7 @@ class Card extends Actor {
         this.shakeBuffer = 15;
         game.scene.particles.ray(this.checkHit(game, other).pos);
         game.scene.particles.impact(this.checkHit(game, other).pos);
-        
+
         if (!this.health) {
             game.score += 100;
             game.playSound('explosion');
@@ -82,10 +82,10 @@ class Polka extends Actor {
         this.cards = [];
         for (let i = 0; i < 4; i++) {
             this.cards.push(new Card(CollisionBox.center(this).plus(new Vector2(-16, -24)), this, i));
-            
+
         }
     }
-    
+
     checkHit = (game, collisionBox) => {
         const collision = CollisionBox.intersects(this, collisionBox);
         if (this.phase === 'hide' || this.phase === 'prepare') return null;
@@ -99,7 +99,7 @@ class Polka extends Actor {
             game.scene.particles.ray(this.checkHit(game, other).pos);
             game.scene.particles.impact(this.checkHit(game, other).pos);
             game.playSound('damage');
-            
+
             if (!this.health) {
                 this.vel = new Vector2(this.dir ? -2 : 2, -2.5);
                 game.score += 5000;
@@ -228,7 +228,7 @@ class Polka extends Actor {
             }
         }
     }
-    
+
     setAnimation = animation => {
         this.animation = animation;
         this.animationFrame = 0;
@@ -236,7 +236,7 @@ class Polka extends Actor {
 
     update = game => {
         const flare = game.scene.actors.find(actor => actor instanceof Flare);
-        
+
         if (this.phase) this[`${this.phase}Phase`](game);
         // if (this.phase !== 'chant' && this.health > this.maxHealth / 2) this.chantPhase(game);
 
@@ -254,9 +254,9 @@ class Polka extends Actor {
             this.vel = new Vector2(Math.max(-8, Math.min(8, this.vel.x)), Math.max(-8, Math.min(8, this.vel.y)));
 
             if (this.phase !== 'defeated') {
-    
+
                 const newCollisionBox = { pos:new Vector2(this.pos.x + this.vel.x, this.pos.y), size:this.size }
-    
+
                 if (CollisionBox.intersectingCollisionBoxes(newCollisionBox, game.scene.currentSection.collisions).length) {
                     this.pos.x = Math.round(this.pos.x);
                     while (!CollisionBox.intersectingCollisionBoxes({ pos:new Vector2(this.pos.x + Math.sign(this.vel.x), this.pos.y), size:this.size }, game.scene.currentSection.collisions).length) {
@@ -265,7 +265,7 @@ class Polka extends Actor {
                     this.moveDir *= -1;
                     this.vel.x = 0;
                 }
-    
+
                 this.isGrounded = false;
                 if (CollisionBox.intersectingCollisionBoxes({ pos:new Vector2(this.pos.x, this.pos.y + this.vel.y), size:this.size }, game.scene.currentSection.collisions).length) {
                     this.isGrounded = CollisionBox.intersectingCollisionBoxes({ pos:new Vector2(this.pos.x, this.pos.y + this.vel.y), size:this.size }, game.scene.currentSection.collisions).some(c => c.other.pos.y > this.pos.y);
@@ -280,9 +280,9 @@ class Polka extends Actor {
             this.pos.y = Math.round((this.pos.y + this.vel.y) * 100) / 100;
             this.pos.x = Math.round((this.pos.x + this.vel.x) * 100) / 100;
         }
-        
+
         if (flare.playerControl && this.health && this.phase !== 'release' && this.phase !== 'attack' && this.phase !== 'fly') this.dir = CollisionBox.center(this).x < CollisionBox.center(flare).x;
-        
+
         if (this.lastPhase !== this.phase) this.phaseBuffer = 0;
         else this.phaseBuffer++;
         this.lastPhase = this.phase;
@@ -321,7 +321,7 @@ class Polka extends Actor {
         });
 
         if (this.phase === 'fly') game.scene.particles.smoke_spirit(CollisionBox.center(this), new Vector2(0, 0), 0);
-        
+
         if (this.invicibility) this.invicibility--;
         this.animationFrame++;
         this.frameCount++;

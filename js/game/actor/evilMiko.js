@@ -4,7 +4,7 @@ class EvilMiko extends Actor {
     dir = true;
 
     phaseBuffer = 0;
-    
+
     posTarget = null;
     posTargets = [
         new Vector2(29.5 * 16, 40 * 16),
@@ -13,7 +13,7 @@ class EvilMiko extends Actor {
     ];
 
     damage = 1;
-    
+
     healthBar = 0;
 
     crystalDist = 32;
@@ -34,19 +34,19 @@ class EvilMiko extends Actor {
         this.crystalPos2 = this.pos.plus(new Vector2(this.size.x / 2, -150));
         this.bucketPos = this.pos.plus(new Vector2(this.size.x / 2, -150));
     }
-    
+
     checkHit = (game, collisionBox) => CollisionBox.intersects(this, collisionBox);
 
     takeHit = (game, other) => {
         if (this.dragonBreath) return;
         if (this.invicibility) return;
-        
+
         this.health = Math.max(0, this.health - (other.damage ? other.damage : 1));
         this.shakeBuffer = 15;
         game.scene.particles.ray(this.checkHit(game, other).pos);
         game.scene.particles.impact(this.checkHit(game, other).pos);
         game.playSound('damage');
-        
+
         if (!this.health) {
             this.vel = new Vector2(this.dir ? -2 : 2, -2.5);
             game.score += 5000;
@@ -56,13 +56,13 @@ class EvilMiko extends Actor {
             this.invicibility = 30;
         }
     }
-    
+
     defeatedPhase = game => {
         //velloss
         this.setAnimation('hit2');
         this.vel = this.vel.mult(new Vector2(0.9, 1));
     }
-    
+
     waitPhase = game => {
         if (!this.posTarget) this.posTarget = this.posTargets[1];
     }
@@ -137,7 +137,7 @@ class EvilMiko extends Actor {
             const bullet = new Bullet(this.bucketPos.plus(new Vector2(Math.random() * 24 - 12, 8)), new Vector2(0, 2), this, true);
             game.scene.actors.push(bullet);
         }
-        
+
         if (this.phaseBuffer >= 240) {
             this.lastMove = this.phase;
             this.setAnimation('evil');
@@ -154,7 +154,7 @@ class EvilMiko extends Actor {
             this.phase = 'idle';
         }
     }
-    
+
     idlePhase = game => {
         if (this.phaseBuffer >= 31) {
             if (Math.random() > (this.lastMove === 'move' ? .1 : .5)) {
@@ -178,7 +178,7 @@ class EvilMiko extends Actor {
             }
         }
     }
-    
+
     setAnimation = animation => {
         this.animation = animation;
         this.animationFrame = 0;
@@ -186,7 +186,7 @@ class EvilMiko extends Actor {
 
     update = game => {
         const flare = game.scene.actors.find(actor => actor instanceof Flare);
-        
+
         if (this.phase) this[`${this.phase}Phase`](game);
 
         if (this.phase === 'defeated') {
@@ -209,7 +209,7 @@ class EvilMiko extends Actor {
         }
 
         this.dir = CollisionBox.center(this).x < CollisionBox.center(flare).x;
-        
+
         if (this.lastPhase !== this.phase) this.phaseBuffer = 0;
         else this.phaseBuffer++;
         this.lastPhase = this.phase;
@@ -257,7 +257,7 @@ class EvilMiko extends Actor {
     }
 
     draw = (game, cx) => {
-        
+
         if (this.phase === 'attack3') {
             cx.save();
             cx.translate(Math.round(this.bucketPos.x), Math.round(this.bucketPos.y));
@@ -299,7 +299,7 @@ class EvilMiko extends Actor {
             cx.drawImage(game.assets.images[`sp_miko_${img}`], -20, -4);
             cx.restore();
         }
-        
+
         if (!['sit'].includes(this.phase) && this.health) {
             cx.save();
             cx.translate(Math.round(this.crystalPos2.x), Math.round(this.crystalPos2.y));

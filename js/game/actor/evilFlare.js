@@ -6,7 +6,7 @@ class EvilFlare extends Actor {
     phaseBuffer = 0;
 
     damage = 1;
-    
+
     healthBar = 0;
 
     attackCount = 0;
@@ -18,7 +18,7 @@ class EvilFlare extends Actor {
         this.maxHealth = maxHealth;
         this.health = this.maxHealth;
     }
-    
+
     checkHit = (game, collisionBox) => {
         if (this.phase === 'defeated') return false;
         return CollisionBox.intersects(this, collisionBox);
@@ -26,13 +26,13 @@ class EvilFlare extends Actor {
 
     takeHit = (game, other) => {
         if (this.invicibility) return;
-        
+
         this.health = Math.max(0, this.health - (other.damage ? other.damage : 1));
         this.shakeBuffer = 15;
         game.scene.particles.ray(this.checkHit(game, other).pos);
         game.scene.particles.impact(this.checkHit(game, other).pos);
         game.playSound('damage');
-        
+
         if (!this.health) {
             this.setAnimation('hit');
             this.vel = new Vector2(this.dir ? -2 : 2, -3);
@@ -43,7 +43,7 @@ class EvilFlare extends Actor {
             this.invicibility = 30;
         }
     }
-    
+
     defeatedPhase = game => {}
 
     backPhase = game => {}
@@ -63,7 +63,7 @@ class EvilFlare extends Actor {
             this.phase = 'idle';
         }
     }
-    
+
     attack2Phase = game => {
         if (!(this.phaseBuffer % 4)) game.scene.particles['charge_fire_4'](CollisionBox.center(this));
 
@@ -94,7 +94,7 @@ class EvilFlare extends Actor {
             this.phase = 'idle';
         }
     }
-    
+
     jumpPhase = game => {
         if (!(this.phaseBuffer % 4)) game.scene.particles.shine_white(CollisionBox.center(this).plus(new Vector2(Math.random() * 16 - 8, Math.random() * 16 - 8).round()), 0);
         if (this.phaseBuffer > 3 && this.pos.y >= 32 * 16) {
@@ -106,7 +106,7 @@ class EvilFlare extends Actor {
         }
         if (this.vel.y > 0) this.setAnimation('fall');
     }
-    
+
     shieldPhase = game => {
         if (!(this.phaseBuffer % 4)) game.scene.particles['charge'](CollisionBox.center(this));
         if (this.phaseBuffer === 30) {
@@ -120,7 +120,7 @@ class EvilFlare extends Actor {
             this.phase = 'idle';
         }
     }
-    
+
     rocketPhase = game => {
         if (!(this.phaseBuffer % 4)) game.scene.particles['charge_fire_2'](CollisionBox.center(this));
 
@@ -136,7 +136,7 @@ class EvilFlare extends Actor {
             this.phase = 'idle';
         }
     }
-    
+
     gunPhase = game => {
         if (this.phaseBuffer > 15 && !(this.phaseBuffer % 12)) {
             this.setAnimation('gun');
@@ -149,7 +149,7 @@ class EvilFlare extends Actor {
             this.phase = 'idle';
         }
     }
-    
+
     idlePhase = game => {
         if (this.phaseBuffer >= 45) {
             const flare = game.scene.actors.find(actor => actor instanceof Flare);
@@ -195,7 +195,7 @@ class EvilFlare extends Actor {
             }
         }
     }
-    
+
     setAnimation = animation => {
         this.animation = animation;
         this.animationFrame = 0;
@@ -203,7 +203,7 @@ class EvilFlare extends Actor {
 
     update = game => {
         const flare = game.scene.actors.find(actor => actor instanceof Flare);
-        
+
         if (this.phase) this[`${this.phase}Phase`](game);
 
         if (this.lastPhase !== this.phase) this.phaseBuffer = 0;
@@ -268,7 +268,7 @@ class EvilFlare extends Actor {
             cx.save();
             cx.translate(Math.round(this.pos.x) + this.size.x / 2, Math.round(this.pos.y));
             if (!this.dir) cx.scale(-1, 1);
-            
+
             if (!['back'].includes(this.animation)) {
                 cx.save();
                 cx.translate(-this.size.x / 2, 0);
@@ -279,11 +279,11 @@ class EvilFlare extends Actor {
                 cx.drawImage(game.assets.images['sp_ponytail'],
                     (Math.floor(this.animationFrame / spd) % 3) * 24, side ? 24 : 0, 24, 24,
                     -14, 2 + (this.vel.y ? -4 : 0) + fallOffset + (this.animation === 'slide' ? 8 : 0), 24, 24);
-                
+
                 cx.drawImage(game.assets.images['sp_ribbon'],
                     (Math.floor(this.animationFrame / spd * 1.5) % 3) * 16, side ? 16 : 0, 16, 16,
                     side ? (['run', 'run_attack'].includes(this.animation) ? -14 : -9) : -8, (side ? 16 : 18) + fallOffset * 2, 16, 16);
-                
+
                 cx.save();
                 cx.translate(this.size.x / 2, 0);
                 cx.scale(-1, 1);
@@ -293,7 +293,7 @@ class EvilFlare extends Actor {
                 cx.restore();
                 cx.restore();
             }
-            
+
             const img = this.animation;
             if (img === 'gun') {
                 const offset = Math.floor(this.animationFrame * .25);

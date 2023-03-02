@@ -13,6 +13,9 @@ class Suisei extends Actor {
 
     healthBar = 0;
 
+    animation = 'stand';
+    animationFrame = 0;
+
     constructor(pos, maxHealth, axe) {
         super(pos);
         this.maxHealth = maxHealth;
@@ -20,7 +23,7 @@ class Suisei extends Actor {
         this.axe = axe;
         this.axe.suisei = this;
     }
-    
+
     checkHit = (game, collisionBox) => {
         const collision = CollisionBox.intersects(this, collisionBox);
         return !['flee', 'defeated'].includes(this.phase) ? collision : null;
@@ -33,7 +36,7 @@ class Suisei extends Actor {
             game.scene.particles.ray(this.checkHit(game, other).pos);
             game.scene.particles.impact(this.checkHit(game, other).pos);
             game.playSound('damage');
-            
+
             if (!this.health) {
                 this.vel = new Vector2(this.dir ? -2 : 2, -2.5);
                 game.score += 5000;
@@ -103,7 +106,7 @@ class Suisei extends Actor {
             else {
                 this.axe.isRotation = false;
                 this.phase = 'idle';
-    
+
                 const flare = game.scene.actors.find(actor => actor instanceof Flare);
                 const p1 = new Vector2(flare.pos.x + flare.size.x / 2, flare.pos.y);
                 const p2 = CollisionBox.center(this.axe);
@@ -156,7 +159,7 @@ class Suisei extends Actor {
             }
         }
     }
-    
+
     setAnimation = animation => {
         this.animation = animation;
         this.animationFrame = 0;
@@ -164,7 +167,7 @@ class Suisei extends Actor {
 
     update = game => {
         const flare = game.scene.actors.find(actor => actor instanceof Flare);
-        
+
         if (this.phase) this[`${this.phase}Phase`](game);
         // if (this.phase !== 'chant' && this.health > this.maxHealth / 2) this.chantPhase(game);
 
@@ -196,7 +199,7 @@ class Suisei extends Actor {
         this.pos.x = Math.round((this.pos.x + this.vel.x) * 100) / 100;
 
         if (flare.playerControl && this.health && this.phase !== 'idle') this.dir = CollisionBox.center(this).x < CollisionBox.center(flare).x;
-        
+
         if (this.lastPhase !== this.phase) this.phaseBuffer = 0;
         else this.phaseBuffer++;
         this.lastPhase = this.phase;
@@ -211,7 +214,7 @@ class Suisei extends Actor {
                 if (Math.abs(this.health - this.healthBar) < amt) this.healthBar = this.health;
             }
         }
-        
+
         if (this.invicibility) this.invicibility--;
         this.animationFrame++;
         this.frameCount++;
