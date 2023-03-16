@@ -1,7 +1,9 @@
 const NUIPARAMS = Object.fromEntries(new URLSearchParams(window.location.search).entries());
 let DEBUGMODE = !!(NUIPARAMS.debugmode ?? false);
 const TILENUMBERS = !!(NUIPARAMS.tilenumbers ?? false);
-window.NUIGURUMI = {};
+const NUIGURUMI = {
+    getActor: (_ = Flare) => NUIGURUMI.game.scene.actors.find($ => $ instanceof _),
+};
 
 let SEMUTED = false;
 let SEVOLUME = 0.5;
@@ -128,8 +130,8 @@ window.addEventListener('load', () => {
     fetch("save.json").then(res => res.json()).then(res => {
         console.log("game file loaded", res);
         const game = new Game(new Assets(), Object.freeze(res));
-        window.NUIGURUMI.gamefile = res;
-        window.NUIGURUMI.game = game;
+        NUIGURUMI.gamefile = res;
+        NUIGURUMI.game = game;
         game.assets.load();
         game.start();
     });

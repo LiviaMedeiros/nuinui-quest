@@ -7,7 +7,8 @@ class StageSelect {
         this.selectedStage = selectedStage;
 
         game.resetCanvas();
-        
+        game.resetState();
+
         // Save
         for (let i = 0; i < 5; i++) document.getElementById(`save-stage-${i+1}`).onclick = e => null;
     }
