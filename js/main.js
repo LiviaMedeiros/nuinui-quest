@@ -3,6 +3,16 @@ let DEBUGMODE = !!(NUIPARAMS.debugmode ?? false);
 const TILENUMBERS = !!(NUIPARAMS.tilenumbers ?? false);
 const NUIGURUMI = {
     getActor: (_ = Flare) => NUIGURUMI.game.scene.actors.find($ => $ instanceof _),
+    currentPosition: () => {
+      const { x, y } = NUIGURUMI.getActor().pos;
+      return { x, y, xCell: x/16, yCell: y/16 };
+    },
+    moveTo: (x, y) => NUIGURUMI.getActor().pos = new Vector2(x * 16, y * 16),
+    moveRel: (x = 0, y = 0) => {
+        const pos = NUIGURUMI.getActor().pos;
+        pos.x += x * 16;
+        pos.y += y * 16;
+    },
 };
 
 let SEMUTED = false;

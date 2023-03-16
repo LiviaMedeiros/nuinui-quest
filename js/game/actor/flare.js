@@ -225,6 +225,11 @@ class Flare extends Actor {
         const movement = this.isSliding || keys.left === keys.right ? 0 : this.runSpeed * (keys.right ? 1 : -1);
 
         // DEBUG
+        if (DEBUGMODE) {
+            if (keys.up) {
+                this.pos.y -= 2 * 16;
+            }
+        }
         // if (keys.up) this.pos = new Vector2(115 * 16, 56 * 16);
         // if (keys.up) this.pos = new Vector2(45 * 16, 44 * 16);
 
