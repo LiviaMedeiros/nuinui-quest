@@ -225,11 +225,6 @@ class Flare extends Actor {
         const movement = this.isSliding || keys.left === keys.right ? 0 : this.runSpeed * (keys.right ? 1 : -1);
 
         // DEBUG
-        if (DEBUGMODE) {
-            if (keys.up) {
-                this.pos.y -= 2 * 16;
-            }
-        }
         // if (keys.up) this.pos = new Vector2(115 * 16, 56 * 16);
         // if (keys.up) this.pos = new Vector2(45 * 16, 44 * 16);
 
@@ -287,7 +282,8 @@ class Flare extends Actor {
         // Jump
         this.isJumping = false;
         if (this.jumpBuffer && !keys.jump) this.jumpBuffer = false;
-        if (((this.isGrounded && !this.vel.y) || (this.doubleJump && !this.doubleJumpBuffer)) && keys.jump && !this.jumpBuffer && !this.slideBuffer && !ceilObstacle && !(keys.down && this.slideBuffer)) {
+        if ((DEBUGMODE && keys.up) ||
+        ((this.isGrounded && !this.vel.y) || (this.doubleJump && !this.doubleJumpBuffer)) && keys.jump && !this.jumpBuffer && !this.slideBuffer && !ceilObstacle && !(keys.down && this.slideBuffer)) {
             if (!this.isGrounded) this.doubleJumpBuffer = true;
             this.jumpPower = this.isGrounded ? this.jumpSpeed : 2;
             this.jumpBuffer = true;
