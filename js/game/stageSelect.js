@@ -19,6 +19,7 @@ class StageSelect {
             game.stopBGM();
             StageSelect.PROCESSING = true;
             console.log('processing', 'start');
+            game.cpuKeys = {};
         }
 
         if (this.frameCount < 30) this.transitionAlpha = 1 - this.frameCount / 30;
