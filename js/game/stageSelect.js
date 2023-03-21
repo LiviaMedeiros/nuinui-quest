@@ -1,6 +1,7 @@
 class StageSelect {
     frameCount = 0;
     transitionAlpha = 1;
+    static PROCESSING = false;
 
     constructor(game, currentStage, selectedStage) {
         this.currentStage = currentStage;
@@ -14,7 +15,11 @@ class StageSelect {
     }
 
     update = game => {
-        if (!this.frameCount) game.stopBGM();
+        if (!this.frameCount) {
+            game.stopBGM();
+            StageSelect.PROCESSING = true;
+            console.log('processing', 'start');
+        }
 
         if (this.frameCount < 30) this.transitionAlpha = 1 - this.frameCount / 30;
         else if (this.frameCount < 150) this.transitionAlpha = 0;
@@ -23,6 +28,8 @@ class StageSelect {
         if (this.frameCount === 90) game.playSound('select');
 
         if (this.frameCount === 180) {
+            StageSelect.PROCESSING = false;
+            console.log('processing', 'end');
             game.currentStage = this.selectedStage;
             game.scene = new Scene(game, game.data.game.stages[this.selectedStage]);
         }
@@ -35,11 +42,8 @@ class StageSelect {
             const cx = game[`ctx${i}`];
             cx.save();
             switch (i) {
-                case 0:
-                    cx.fillStyle = "#000";
-                    cx.fillRect(0, 0, game.width, game.height);
-                    break;
                 case 3:
+                    cx.fillStyle = "#000";
                     cx.clearRect(0, 0, game.width, game.height);
                     cx.translate(game.width / 2 - 112, 0);
                     for (let i = 0; i < 5; i++) {
@@ -59,6 +63,11 @@ class StageSelect {
                     cx.globalAlpha = this.transitionAlpha;
                     cx.fillRect(0, 0, game.width, game.height);
                     break;
+                default:
+                    if (this.frameCount === 0) {
+                        cx.fillStyle = "#000";
+                        cx.fillRect(0, 0, game.width, game.height);
+                    }
             }
             cx.restore();
         }

@@ -130,7 +130,8 @@ class Scene {
                 });
                 this.actors = this.actors.filter(actor => persistentActors.includes(actor));
                 this.currentSection.actors.forEach(event => {
-                    this.actors.push(new globalThis[event.className](...event.data));
+                    this.actors.push(eval("new " + event.className + "(...event.data)"));
+                    //this.actors.push(new globalThis[event.className](...event.data));
                 });
                 
                 if (this.actors.some(a => a instanceof Checkpoint) && game.checkpoint && game.checkpoint.pos) {
@@ -145,16 +146,16 @@ class Scene {
     update = game => {
         this.customDraw = [];
 
-        if (DEBUGMODE) {
+        /*if (DEBUGMODE) {
             console.log('scene->update', this.events);
-        }
+        }*/
 
         // Execute event if possible
         if (this.events.length) {
             this.events.forEach(event => {
-                if (DEBUGMODE) {
+                /*if (DEBUGMODE) {
                     console.log('event->update', event);
-                }
+                }*/
                 event.update(game);
                 if (event.end) this.events = this.events.filter(e => e !== event);
             })
