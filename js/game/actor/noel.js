@@ -1,5 +1,5 @@
 class Noel extends Flare {
-    maxHealth = 16;
+    maxHealth = NUIPARAMS.maxhealth || 16;
 
     lastPoses = [];
     slidePower = 5;
@@ -101,7 +101,7 @@ class Noel extends Flare {
         // Jump
         this.isJumping = false;
         if (this.jumpBuffer && !keys.a) this.jumpBuffer = false;
-        if (((this.isGrounded && !this.vel.y) || (this.doubleJump && !this.doubleJumpBuffer) || wallJump) && keys.a && !this.jumpBuffer && !this.slideBuffer && !ceilObstacle && !(keys.down && this.slideBuffer)) {
+        if ((NUIPARAMS.ichigorocket && keys.up) || (((this.isGrounded && !this.vel.y) || (this.doubleJump && !this.doubleJumpBuffer) || wallJump) && keys.a && !this.jumpBuffer && !this.slideBuffer && !ceilObstacle && !(keys.down && this.slideBuffer))) {
             if (!this.isGrounded) this.doubleJumpBuffer = true;
             this.jumpPower = (this.isGrounded ? this.jumpSpeed : 2);
             this.jumpBuffer = true;

@@ -1,4 +1,12 @@
-const EVENTS = {
+function deepFreeze ($) {
+  if ($ !== null && (typeof $ === 'object' || typeof $ === 'function')) {
+    Object.isFrozen($) || Object.freeze($);
+    Object.getOwnPropertyNames($).forEach(prop => deepFreeze($[prop]));
+  }
+  return $;
+};
+
+const EVENTS = deepFreeze({
     "forest": {
         "0_0": [
             {
@@ -6504,4 +6512,4 @@ const EVENTS = {
             }
         ]
     }
-}
+});

@@ -181,6 +181,10 @@ class Scene {
     }
 
     drawTiles = (game, ctx, tiles) => {
+        if (NUIPARAMS.tilenumbers) {
+            ctx.font = "8px sans";
+            ctx.fillStyle = "red";
+        }
         const pos = this.view.pos.times(1 / 16).floor();
         for (let y = pos.y - (!this.towerScroll ? 0 : 1); y < pos.y + 1 + this.view.size.y / 16; y++) {
             for (let x = pos.x; x < pos.x + 1 + this.view.size.x / 16; x++) {
@@ -191,6 +195,10 @@ class Scene {
                     if (tile > 63) tile += 8 * (Math.floor(this.frameCount / (tile === 69 ? 12 : tile > 69 && this.name === 'forest' ? 24 : 6)) % 3);
                     const towerScrollOffset = (!this.towerScroll || (tiles !== this.background && x > 22 && x < 37)) ? 0 : Math.floor(this.frameCount / this.towerScroll) % 16;
                     ctx.drawImage(game.assets.images[`ts_${this.name}${this.altColor ? '_alt' : ''}`], (tile % 8) * 16, Math.floor(tile / 8) * 16, 16, 16, x * 16, y * 16 + towerScrollOffset, 16, 16);
+                    if (NUIPARAMS.tilenumbers) {
+                        ctx.fillText(x.toString(16), x * 16, y * 16);
+                        ctx.fillText(y.toString(16), x * 16, y * 16 + 8);
+                    }
                 }
             }
         }
@@ -496,12 +504,12 @@ class Scene {
                     if (DEBUGMODE) this.currentSection.collisions.forEach(a => {
                         cx.save();
                         cx.translate(Math.round(a.pos.x), Math.round(a.pos.y));
-                        cx.fillStyle = "#00f8";
+                        cx.fillStyle = "#00f6";
                         cx.fillRect(0, 0, a.size.x, 1);
                         cx.fillRect(0, 0, 1, a.size.y);
                         cx.fillRect(a.size.x - 1, 0, 1, a.size.y);
                         cx.fillRect(0, a.size.y - 1, a.size.x, 1);
-                        cx.fillStyle = "#00f4";
+                        cx.fillStyle = "#00f3";
                         cx.fillRect(0, 0, a.size.x, a.size.y);
                         cx.restore();
                     });

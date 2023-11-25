@@ -1,8 +1,8 @@
 class Game {
     frameCount = 0;
 
-    width = 16 * 20;
-    height = 16 * 12;
+    width = 16 * 20 * (NUIPARAMS.wm ?? 1);;
+    height = 16 * 12 * (NUIPARAMS.hm ?? 1);;
 
     fullscreen = document.fullscreenElement ? true : false;
     scale = false;
@@ -24,7 +24,7 @@ class Game {
     score = 0;
     scoreDisplay = 0;
 
-    mode = 'flare';
+    mode = NUIPARAMS.mode || 'flare';
 
     isPaused = false;
     timer = 0;
@@ -63,6 +63,13 @@ class Game {
             this[`ctx${i}`] = this[`canvas${i}`].getContext('2d');
             this[`ctx${i}`].imageSmoothingEnabled = false;
         }
+
+        let hideCursor = null;
+        container.addEventListener('pointermove', ({ target: { style } }) => {
+          if (hideCursor) clearTimeout(hideCursor);
+          else style.cursor = 'auto';
+          hideCursor = setTimeout(() => { style.cursor = 'none'; hideCursor = null; }, 2000);
+        });
 
         this.resize();
         window.addEventListener('resize', this.resize);

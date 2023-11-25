@@ -39,15 +39,15 @@ class Actor {
         cx.restore();
     }
 
-    displayCollisionBox = (game, cx) => {
+    displayCollisionBox = (game, cx, color = '0f0') => {
         cx.save();
         cx.translate(Math.round(this.pos.x), Math.round(this.pos.y));
-        cx.fillStyle = "#00f8";
+        cx.fillStyle = `#${color}6`;
         cx.fillRect(0, 0, this.size.x, 1);
         cx.fillRect(0, 0, 1, this.size.y);
         cx.fillRect(this.size.x - 1, 0, 1, this.size.y);
         cx.fillRect(0, this.size.y - 1, this.size.x, 1);
-        cx.fillStyle = "#00f4";
+        cx.fillStyle = `#${color}3`;
         cx.fillRect(0, 0, this.size.x, this.size.y);
         cx.restore();
     }
